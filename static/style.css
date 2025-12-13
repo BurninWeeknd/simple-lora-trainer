@@ -1,0 +1,200 @@
+/* ===================== THEME VARIABLES ===================== */
+
+:root {
+    --bg: #f7f7f7;
+    --panel: #ffffff;
+    --text: #111111;
+    --border: #dddddd;
+    --muted: #666666;
+    --accent: #4f46e5;
+    --danger: #c0392b;
+    --danger-bg: #fff3f0;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #0f0f10;
+        --panel: #1a1a1d;
+        --text: #e5e5e5;
+        --border: #2a2a2e;
+        --muted: #a0a0a0;
+        --accent: #818cf8;
+        --danger: #f87171;
+        --danger-bg: #3f1d1d;
+    }
+}
+
+/* ===================== BASE LAYOUT ===================== */
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    margin: 40px;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.container {
+    background: var(--panel);
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 900px;
+    border: 1px solid var(--border);
+    margin: 0 auto;
+}
+
+/* ===================== ELEMENTS ===================== */
+
+h1 {
+    margin-top: 0;
+}
+
+select,
+input {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 14px;
+}
+
+select {
+    font-size: 16px;
+}
+
+pre {
+    background: var(--bg);
+    padding: 15px;
+    border-radius: 6px;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+}
+
+/* ===================== WARNINGS ===================== */
+
+.danger {
+    border: 2px solid var(--danger);
+    background: var(--danger-bg);
+}
+
+.warning-box {
+    margin: 15px 0;
+    padding: 12px;
+    background: var(--danger-bg);
+    border: 1px solid var(--danger);
+    border-radius: 8px;
+}
+
+/* ===================== TOOLTIPS ===================== */
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    color: var(--muted);
+    margin-left: 8px;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.tooltip::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: 50%;
+    bottom: 125%;
+    transform: translateX(-50%);
+    background: var(--panel);
+    color: var(--text);
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    white-space: normal;
+    width: max-content;
+    max-width: 280px;
+    font-size: 13px;
+    line-height: 1.4;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 1000;
+}
+
+.tooltip:hover::after {
+    opacity: 1;
+}
+
+/* ===================== SECTION CARDS ===================== */
+
+.section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 24px 0;
+}
+
+.section h2 {
+    position: relative;
+    padding-left: 14px;
+}
+
+.section h2::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--muted);
+}
+
+.section h3 {
+    margin-top: 16px;
+    color: var(--muted);
+}
+
+button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.train-button {
+    background: var(--accent);
+    color: white;
+    padding: 8px 16px;
+    margin-bottom: 8px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.train-button:hover {
+    filter: brightness(1.1);
+}
+
+/* ===================== DANGER ZONE ===================== */
+
+.danger-zone {
+    background: var(--panel);
+    border: 1px solid var(--border);
+}
+
+.danger-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--danger);
+    margin-bottom: 6px;
+}
+
+.danger-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 14px;
+}
