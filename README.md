@@ -13,7 +13,6 @@
 2) NVIDIA GPU (required for training)
 3) CUDA compatible with your PyTorch install
 ----------------------------
-- Python - 
 - Python 3.10+ recommended
 ----------------------------
 - Conda environment strongly suggested
