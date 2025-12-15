@@ -18,28 +18,31 @@ Python 3.10+ recommended
 ----------------------------
 Conda environment strongly suggested
 ----------------------------
-Optional - 
-xFormers (must match your PyTorch + CUDA versions)
-----------------------------
+Installation
+git clone --recursive https://github.com/bravooscarromeo/simple-lora-trainer.git
+cd path/to/Lora_Trainer
+pip install -r requirements.txt
+pip install torch
+###
 Training Backend
 This app uses sd-scripts.
 You must install its dependencies manually:
-cd trainer/sd-scripts
+###
+cd path/to/Lora_Trainer/trainer/sd-scripts
 pip install -r requirements.txt
 pip install accelerate
 accelerate config
-----------------------------
-Installation
-git clone 
 cd path/to/Lora_Trainer
-pip install -r requirements.txt
 python app.py
 DONE
 ----------------------------
+Optional - 
+xFormers (must match your PyTorch + CUDA versions)
+-----------------------------
 Usage
-Create a project
+Create a project (folder defaults to home/yourusername/lora_project
 Place your image folders inside the project’s dataset/ directory
-Do not place images directly in dataset/ — use subfolders
+Do not place images directly in dataset/ — use a subfolder per project
 Configure settings
 Click Train
 ----------------------------
