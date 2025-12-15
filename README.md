@@ -1,22 +1,22 @@
-LoRA Trainer (SD 1.5 & SDXL)
-A simple web UI for training LoRA models using sd-scripts.
-Designed to avoid overwhelming settings and focus on the ones that actually matter.
-Supports SD 1.5 and SDXL only
-For Linux (created & tested on Ubuntu 24.04 LTS)
-Minimal UI, safety checks included
-No advanced / experimental features by default
-This project is considered feature-complete.
-Only bug fixes will be added.
+- LoRA Trainer (SD 1.5 & SDXL)
+- A simple web UI for training LoRA models using sd-scripts.
+- Designed to avoid overwhelming settings and focus on the ones that actually matter.
+- Supports SD 1.5 and SDXL only
+- For Linux (created & tested on Ubuntu 24.04 LTS)
+- Minimal UI, safety checks included
+- No advanced / experimental features by default
+- This project is considered feature-complete.
+- Only bug fixes will be added.
 ----------------------------
-System Requirements:
-Linux (Ubuntu recommended)
-NVIDIA GPU (required for training)
-CUDA compatible with your PyTorch install
+ - System Requirements:
+1) Linux (Ubuntu recommended)
+2) NVIDIA GPU (required for training)
+3) CUDA compatible with your PyTorch install
 ----------------------------
-Python - 
-Python 3.10+ recommended
+- Python - 
+- Python 3.10+ recommended
 ----------------------------
-Conda environment strongly suggested
+- Conda environment strongly suggested
 ----------------------------
 Installation:
 1) git clone --recursive https://github.com/bravooscarromeo/simple-lora-trainer.git
@@ -40,11 +40,11 @@ Optional -
 xFormers (must match your PyTorch + CUDA versions)
 -----------------------------
 Usage
-Create a project (folder defaults to home/yourusername/lora_project
-Place your image folders inside the project’s dataset/ directory
-Do not place images directly in dataset/ — use a subfolder per project
-Configure settings
-Click Train
+1) Create a project (folder defaults to home/yourusername/lora_project
+!! Place your image folders inside the project’s dataset/ directory
+!! Do not place images directly in dataset/ — use a subfolder per project
+2) Configure settings
+3) Click Train
 ----------------------------
 The UI includes:
 Warnings for risky settings
