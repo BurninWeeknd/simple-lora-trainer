@@ -18,22 +18,22 @@ Python 3.10+ recommended
 ----------------------------
 Conda environment strongly suggested
 ----------------------------
-Installation
-git clone --recursive https://github.com/bravooscarromeo/simple-lora-trainer.git
-cd path/to/Lora_Trainer
-pip install -r requirements.txt
-pip install torch
+Installation:
+1) git clone --recursive https://github.com/bravooscarromeo/simple-lora-trainer.git
+2) cd path/to/Lora_Trainer
+3) pip install -r requirements.txt
+4) pip install torch
 ###
 Training Backend
 This app uses sd-scripts.
 You must install its dependencies manually:
 ###
-cd path/to/Lora_Trainer/trainer/sd-scripts
-pip install -r requirements.txt
-pip install accelerate
-accelerate config
-cd path/to/Lora_Trainer
-python app.py
+5) cd path/to/Lora_Trainer/trainer/sd-scripts
+6) pip install -r requirements.txt
+7) pip install accelerate
+8) accelerate config
+9) cd path/to/Lora_Trainer
+10) python app.py
 DONE
 ----------------------------
 Optional - 
