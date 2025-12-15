@@ -40,8 +40,7 @@ You must install its dependencies manually:
 -----------------------------
 Usage
 1) Create a project (folder defaults to home/yourusername/lora_project
-- !! Place your image folders inside the project’s dataset/ directory
-- !! Do not place images directly in dataset/ — use a subfolder per project
+- !! Do not place images directly in dataset/ — use a subfolder within the dataset folder - within the UI leave path as default 
 2) Configure settings
 3) Click Train
 ----------------------------
