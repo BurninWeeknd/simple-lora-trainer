@@ -34,7 +34,7 @@ You must install its dependencies manually:
 8) accelerate config
 9) cd path/to/Lora_Trainer
 10) python app.py
-DONE
+11) hosted on port 5000 - ctrl + click link in terminal
 ----------------------------
 Optional - 
 xFormers (must match your PyTorch + CUDA versions)
