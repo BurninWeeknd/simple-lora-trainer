@@ -102,15 +102,23 @@
 <br><br>
 
 <label>
-  Checkpoint (optional)
+  Base Model
   <span class="tooltip"
-        data-tip="Optional base checkpoint path. Leave empty to use trainer default.">
+        data-tip="Select a base model from the models folder. Leave empty to use the default.">
     ⓘ
   </span>
 </label><br>
 
-<input name="model_checkpoint" type="text"
-       value="{{ model.get('checkpoint', '') }}">
+<select name="model_checkpoint">
+  <option value="">-- use default --</option>
+
+  {% for m in available_models %}
+    <option value="{{ m }}"
+      {% if model.get('checkpoint') == m %}selected{% endif %}>
+      {{ m }}
+    </option>
+  {% endfor %}
+</select>
 
 <!-- ===================== DATASET ===================== -->
 
@@ -121,7 +129,15 @@
 <input name="dataset_path" type="text" value="{{ dataset.get('path','') }}">
 <br><br>
 
-<label>Resolution</label><br>
+<label>
+  Resolution
+  <span class="tooltip"
+        data-tip="Images are automatically resized during training. 
+        Mixed image sizes will not cause errors, but inconsistent framing may reduce training result quality. 
+        For best results, use similarly framed images or crop your dataset before training.">
+    ⓘ
+  </span>
+</label><br>
 <input name="resolution" type="number" value="{{ dataset.get('resolution','') }}">
 <br><br>
 
@@ -167,11 +183,25 @@
 </label>
 <br><br>
 
-<label>Prepend Token</label><br>
+<label>
+  Prepend Token
+  <span class="tooltip" data-tip="
+Token added to the beginning of every caption.
+Often used as a trigger word for the LoRA.
+Example: <my_character>
+">ⓘ</span>
+</label><br>
 <input name="prepend_token" type="text" value="{{ captions.get('prepend_token','') }}">
 <br><br>
 
-<label>Append Token</label><br>
+<label>
+  Append Token
+  <span class="tooltip" data-tip="
+Token added to the end of every caption.
+Useful for enforcing styles or modifiers.
+Less commonly used than prepend tokens.
+">ⓘ</span>
+</label><br>
 <input name="append_token" type="text" value="{{ captions.get('append_token','') }}">
 
 <hr>
@@ -179,8 +209,14 @@
 <h3>Bucketing</h3>
 
 <label>
-  <input type="checkbox" name="bucket_enabled" {% if bucket.get('enabled') %}checked{% endif %}>
+  <input type="checkbox" name="bucket_enabled"
+         {% if bucket.get('enabled') %}checked{% endif %}>
   Enable Bucketing
+  <span class="tooltip" data-tip="
+Groups images by similar resolutions.
+Reduces distortion for mixed-resolution datasets.
+Does not upscale images.
+">ⓘ</span>
 </label>
 <br><br>
 
@@ -192,7 +228,14 @@
 <input name="bucket_max_res" type="number" value="{{ bucket.get('max_res','') }}">
 <br><br>
 
-<label>Step</label><br>
+<label>
+  Step
+  <span class="tooltip" data-tip="
+Resolution step size used for bucketing.
+Common values: 32 or 64.
+Smaller values increase flexibility but cost more VRAM.
+">ⓘ</span>
+</label><br>
 <input name="bucket_step" type="number" value="{{ bucket.get('step','') }}">
 
 <hr>
@@ -215,7 +258,30 @@
        class="{% if 'epochs' in danger_fields %}danger{% endif %}">
 <br><br>
 
-<label>Gradient Accumulation</label><br>
+<label>
+  Save Every N Epochs
+  <span class="tooltip"
+        data-tip="Controls how often checkpoints are saved during training. Example: 1 saves every epoch, 5 saves every 5 epochs.">
+    ⓘ
+  </span>
+</label><br>
+
+<input
+  name="save_every_epochs"
+  type="number"
+  min="1"
+  value="{{ training.get('save_every_epochs', 1) }}"
+>
+<br><br>
+
+<label>
+  Gradient Accumulation
+  <span class="tooltip" data-tip="
+Simulates a larger batch size by accumulating gradients across steps.
+Batch Size 1 + Accumulation 4 = Effective batch size 4.
+Reduces VRAM usage but slows training.
+">ⓘ</span>
+</label><br>
 <input name="gradient_accumulation" type="number"
        value="{{ training.get('gradient_accumulation','') }}">
 <br><br>
@@ -257,10 +323,22 @@
        class="{% if 'lr_clip' in danger_fields %}danger{% endif %}">
 <br><br>
 
-<label>T5 LR</label><br>
-<input name="lr_t5" type="text"
-       value="{{ lrs.get('t5','') }}"
-       class="{% if 'lr_t5' in danger_fields %}danger{% endif %}">
+<label>
+  T5 LR
+  <span class="tooltip" data-tip="
+Used only by SDXL.
+SD 1.5 does not include a T5 text encoder.
+This setting is ignored for SD 1.5.
+">ⓘ</span>
+</label><br>
+
+<input
+  id="lr_t5"
+  name="lr_t5"
+  type="text"
+  value="{{ lrs.get('t5','') }}"
+  class="{% if 'lr_t5' in danger_fields %}danger{% endif %}"
+>
 
 <hr>
 </div>
@@ -284,15 +362,37 @@
 <input name="lora_alpha" type="number" value="{{ lora.get('alpha','') }}">
 <br><br>
 
-<label>Dropout</label><br>
+<label>
+  Dropout
+  <span class="tooltip" data-tip="
+Randomly disables a portion of LoRA weights during training.
+Helps reduce overfitting on small datasets.
+Most LoRA training uses 0.0.
+">ⓘ</span>
+</label><br>
 <input name="lora_dropout" type="text" value="{{ lora.get('dropout','') }}">
 <br><br>
 
-<label>Target Modules</label><br>
+<label>
+  Target Modules
+  <span class="tooltip" data-tip="
+Specifies which layers LoRA is applied to.
+Leaving this empty uses recommended defaults.
+Advanced option — usually unnecessary.
+">ⓘ</span>
+</label><br>
 <input name="lora_target_modules" type="text" value="{{ lora.get('target_modules','') }}">
 <br><br>
 
-<label>Bias</label><br>
+<label>
+  Bias
+  <span class="tooltip" data-tip="
+Controls whether bias weights are trained.
+none: LoRA only (recommended)
+lora_only: LoRA bias terms
+all: All bias weights (rare)
+">ⓘ</span>
+</label><br>
 <select name="lora_bias">
 {% for opt in ["none","all","lora_only"] %}
   <option value="{{ opt }}" {% if lora.get('bias') == opt %}selected{% endif %}>{{ opt }}</option>
@@ -319,6 +419,11 @@
   <input type="checkbox" name="gradient_checkpointing"
          {% if precision.get('gradient_checkpointing') %}checked{% endif %}>
   Gradient Checkpointing
+  <span class="tooltip" data-tip="
+Reduces VRAM usage by recomputing activations.
+Slows training but greatly lowers memory usage.
+Does not affect final quality.
+">ⓘ</span>
 </label>
 <br><br>
 
@@ -351,19 +456,59 @@
 </select>
 <br><br>
 
-<label>Weight Decay</label><br>
+<label>
+  Weight Decay
+  <span class="tooltip" data-tip="
+Penalizes large weights to reduce overfitting.
+
+Acts like regularization — higher values encourage simpler models but can weaken learning.
+Typical values are 0.0 – 0.1.
+
+Most LoRA training works fine with 0 or very small values.
+  ">ⓘ</span>
+</label><br>
 <input name="weight_decay" type="text" value="{{ optimizer.get('weight_decay','') }}">
 <br><br>
 
-<label>Beta 1</label><br>
+<label>
+  Beta 1
+  <span class="tooltip" data-tip="
+Controls how much the optimizer remembers recent gradients.
+
+Higher values smooth training but react slower to changes.
+Typical value: 0.9.
+
+Rarely needs adjustment for LoRA training.
+  ">ⓘ</span>
+</label><br>
 <input name="beta1" type="text" value="{{ betas[0] if betas|length > 0 else '' }}">
 <br><br>
 
-<label>Beta 2</label><br>
+<label>
+  Beta 2
+  <span class="tooltip" data-tip="
+Controls how much the optimizer remembers long-term gradient variance.
+
+Higher values make training more stable but slower to adapt.
+Typical value: 0.999.
+
+Usually safe to leave at default.
+  ">ⓘ</span>
+</label><br>
 <input name="beta2" type="text" value="{{ betas[1] if betas|length > 1 else '' }}">
 <br><br>
 
-<label>Epsilon</label><br>
+<label>
+  Epsilon
+  <span class="tooltip" data-tip="
+Small value added for numerical stability.
+
+Prevents division by zero inside the optimizer.
+Typical values are 1e-8 to 1e-6.
+
+Changing this rarely improves results.
+  ">ⓘ</span>
+</label><br>
 <input name="epsilon" type="text" value="{{ optimizer.get('epsilon','') }}">
 
 <hr>
@@ -374,7 +519,15 @@
 <div class="section">
 <h2>Scheduler</h2>
 
-<label>Scheduler Type</label><br>
+<label>
+  Scheduler Type
+  <span class="tooltip" data-tip="
+Controls how learning rate changes during training.
+cosine: smooth decay - 
+linear: steady decay - 
+constant: no decay
+">ⓘ</span>
+</label><br>
 <select name="scheduler_type">
 {% for opt in ["cosine","linear","constant"] %}
   <option value="{{ opt }}" {% if scheduler.get('type') == opt %}selected{% endif %}>{{ opt }}</option>
@@ -386,7 +539,14 @@
 <input name="warmup_steps" type="number" value="{{ scheduler.get('warmup_steps','') }}">
 <br><br>
 
-<label>Num Cycles</label><br>
+<label>
+  Num Cycles
+  <span class="tooltip" data-tip="
+Used by some schedulers (e.g. cosine).
+Controls how many LR cycles occur.
+Most setups use 1.
+">ⓘ</span>
+</label><br>
 <input name="num_cycles" type="number" value="{{ scheduler.get('num_cycles','') }}">
 
 <hr>
@@ -406,49 +566,122 @@
     name="action"
     value="train"
     class="train-button"
+    {% if has_fatal %}disabled{% endif %}
   >
     ▶ Start Training
   </button>
 
-  {% if vram_estimate %}
-  <div style="margin-top: 12px; color: var(--muted);">
-    Estimated VRAM usage:
-    <strong>{{ "%.1f"|format(vram_estimate) }} GB</strong>
-  </div>
+</div>
+
+<!-- ===================== STOP ===================== -->
+
+{% if training_status == "running" %}
+<div class="section">
+  <h2>Training Logs</h2>
+  
+  <p style="color: var(--muted);">
+    Training is currently running.
+  </p>
+
+  <pre id="log-box" style="max-height: 300px; overflow-y: auto;"></pre>
+
+  <button
+    type="submit"
+    class="danger"
+    formaction="{{ url_for('stop_training', project=selected) }}"
+    formmethod="post"
+  >
+    ⏹ Stop Training
+  </button>
+</div>
+
+<!-- ===================== LIVE STATUS ===================== -->
+
+<script>
+async function fetchLogs() {
+  const res = await fetch("/train_logs/{{ selected }}");
+  const data = await res.json();
+  const box = document.getElementById("log-box");
+  box.textContent = data.logs;
+  box.scrollTop = box.scrollHeight;
+}
+
+fetchLogs();
+setInterval(fetchLogs, 2000);
+</script>
 {% endif %}
 
-{% if vram_estimate %}
-  <div style="margin-top: 12px;">
-    Estimated VRAM usage:
-    <strong>{{ "%.1f"|format(vram_estimate) }} GB</strong>
-  </div>
-  <div style="font-size: 13px; color: var(--muted);">
-    Actual usage may vary by ±2 GB depending on GPU, drivers, and model.
-  </div>
-{% endif %}
-</div>
+{% set fatal_issues = issues | selectattr("level", "equalto", "fatal") | list %}
+{% set has_fatal = fatal_issues | length > 0 %}
+{% set has_danger = danger_fields | length > 0 %}
 
 <!-- ===================== SAVE ===================== -->
 
 {% if issues %}
   <div class="warning-box">
-    {% for i in issues %}<div>{{ i.message }}</div>{% endfor %}
+    {% for i in issues %}
+      <div>{{ i.message }}</div>
+    {% endfor %}
   </div>
-  {% if danger_fields %}
-    <button name="confirm" value="yes">Proceed Anyway</button>
-    <button type="submit">Cancel</button>
-  {% else %}
-    <button type="submit">Save</button>
-  {% endif %}
+{% endif %}
+
+{% if has_fatal %}
+  {# Fatal error: cannot proceed, only allow Save so user can correct config #}
+  <button type="submit">Save</button>
+
+{% elif has_danger %}
+  {# Risky but allowed: user may proceed #}
+  <button name="confirm" value="yes">Proceed Anyway</button>
+  <button type="submit">Cancel</button>
+
 {% else %}
   <button type="submit">Save</button>
 {% endif %}
 
-</form>
+<script>
+  // Save scroll position when a submit action is triggered
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    if (btn.type === "submit") {
+      localStorage.setItem("scrollY", window.scrollY);
+    }
+  });
+
+  // Restore scroll position after page load
+  window.addEventListener("load", () => {
+    const y = localStorage.getItem("scrollY");
+    if (y !== null) {
+      window.scrollTo(0, parseInt(y, 10));
+    }
+  });
+</script>
 
 <script>
-const danger = document.querySelector(".danger");
-if (danger) danger.scrollIntoView({behavior:"smooth", block:"center"});
+function updateT5Availability() {
+  const archSelect = document.querySelector('select[name="model_architecture"]');
+  const t5Input = document.getElementById('lr_t5');
+
+  if (!archSelect || !t5Input) return;
+
+  if (archSelect.value === "sd15") {
+    t5Input.disabled = true;
+    t5Input.style.opacity = "0.5";
+    t5Input.style.cursor = "not-allowed";
+  } else {
+    t5Input.disabled = false;
+    t5Input.style.opacity = "1";
+    t5Input.style.cursor = "text";
+  }
+}
+
+// Run on page load
+document.addEventListener("DOMContentLoaded", updateT5Availability);
+
+// Run when architecture changes
+document.querySelector('select[name="model_architecture"]')
+  ?.addEventListener("change", updateT5Availability);
 </script>
 
 {% endif %}

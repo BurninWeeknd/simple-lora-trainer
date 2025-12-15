@@ -6,8 +6,8 @@ def parse_int(form, key, issues, min_value=None, max_value=None):
     if raw == "":
         issues.append({
             "field": key,
-            "level": "danger",
-            "message": f"{key.replace('_', ' ').title()} cannot be empty."
+            "level": "fatal",
+            "message": f"{key.replace('_', ' ').title()} cannot be empty. Value has been reverted."
         })
         return None
 
@@ -16,24 +16,24 @@ def parse_int(form, key, issues, min_value=None, max_value=None):
     except Exception:
         issues.append({
             "field": key,
-            "level": "danger",
-            "message": f"{key.replace('_', ' ').title()} must be an integer."
+            "level": "fatal",
+            "message": f"{key.replace('_', ' ').title()} must be an integer. Value has been reverted."
         })
         return None
 
     if min_value is not None and value < min_value:
         issues.append({
             "field": key,
-            "level": "danger",
-            "message": f"{key.replace('_', ' ').title()} must be ≥ {min_value}."
+            "level": "fatal",
+            "message": f"{key.replace('_', ' ').title()} must be ≥ {min_value}. Value has been reverted."
         })
         return None
 
     if max_value is not None and value > max_value:
         issues.append({
             "field": key,
-            "level": "danger",
-            "message": f"{key.replace('_', ' ').title()} is unreasonably large."
+            "level": "fatal",
+            "message": f"{key.replace('_', ' ').title()} is unreasonably large. Value has been reverted."
         })
         return None
 
@@ -45,8 +45,8 @@ def parse_float(form, key, issues, min_value=None, max_value=None):
     if raw == "":
         issues.append({
             "field": key,
-            "level": "danger",
-            "message": f"{key.replace('_', ' ').title()} cannot be empty."
+            "level": "fatal",
+            "message": f"{key.replace('_', ' ').title()} cannot be empty. Value has been reverted."
         })
         return None
 
@@ -55,32 +55,32 @@ def parse_float(form, key, issues, min_value=None, max_value=None):
     except Exception:
         issues.append({
             "field": key,
-            "level": "danger",
-            "message": f"{key.replace('_', ' ').title()} must be a number."
+            "level": "fatal",
+            "message": f"{key.replace('_', ' ').title()} must be a number. Value has been reverted."
         })
         return None
 
     if not math.isfinite(value):
         issues.append({
             "field": key,
-            "level": "danger",
-            "message": f"{key.replace('_', ' ').title()} must be a finite number."
+            "level": "fatal",
+            "message": f"{key.replace('_', ' ').title()} must be a finite number. Value has been reverted."
         })
         return None
 
     if min_value is not None and value < min_value:
         issues.append({
             "field": key,
-            "level": "danger",
-            "message": f"{key.replace('_', ' ').title()} must be ≥ {min_value}."
+            "level": "fatal",
+            "message": f"{key.replace('_', ' ').title()} must be ≥ {min_value}. Value has been reverted."
         })
         return None
 
     if max_value is not None and value > max_value:
         issues.append({
             "field": key,
-            "level": "danger",
-            "message": f"{key.replace('_', ' ').title()} is unreasonably large."
+            "level": "fatal",
+            "message": f"{key.replace('_', ' ').title()} is unreasonably large. Value has been reverted."
         })
         return None
 

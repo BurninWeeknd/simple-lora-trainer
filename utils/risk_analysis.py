@@ -12,11 +12,16 @@ def analyze_training_risk(training):
         if value is None:
             return []
 
+        # LR = 0 is explicitly allowed (freezing component)
+        if value == 0:
+            return []
+
         issues = []
+
         if value > TYPICAL_MAX * 10 or value < TYPICAL_MIN / 10:
             issues.append({
                 "field": f"lr_{name}",
-                "level": "danger",
+                "level": "warn",
                 "message": f"{name.upper()} LR {value} is far outside typical range."
             })
         elif value > TYPICAL_MAX * 5 or value < TYPICAL_MIN / 5:
@@ -25,6 +30,7 @@ def analyze_training_risk(training):
                 "level": "warn",
                 "message": f"{name.upper()} LR {value} is unusual."
             })
+
         return issues
 
     issues += check_lr("unet", unet)
@@ -45,7 +51,7 @@ def analyze_training_risk(training):
     if batch is not None and batch < 1:
         issues.append({
             "field": "batch_size",
-            "level": "danger",
+            "level": "fatal",
             "message": "Batch size must be >= 1."
         })
 
@@ -54,8 +60,22 @@ def analyze_training_risk(training):
     if epochs is not None and epochs <= 0:
         issues.append({
             "field": "epochs",
-            "level": "danger",
+            "level": "fatal",
             "message": "Epochs must be > 0."
+        })
+
+    # Clip skip sanity (warn only)
+    conditioning = training.get("conditioning", {})
+    clip_skip = conditioning.get("clip_skip")
+
+    if clip_skip is not None and clip_skip > 4:
+        issues.append({
+            "field": "clip_skip",
+            "level": "warn",
+            "message": (
+                f"Clip Skip {clip_skip} is higher than typical. "
+                "Values above 2–4 often degrade prompt understanding."
+            )
         })
 
     return issues

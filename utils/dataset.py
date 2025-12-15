@@ -46,16 +46,33 @@ def apply(form, config, issues):
 
     # ---- Bucketing ----
     bucket = dataset["bucket"]
+    bucket_enabled = "bucket_enabled" in form
+    bucket["enabled"] = bucket_enabled
 
-    bucket["enabled"] = "bucket_enabled" in form
+    # Only REQUIRE bucket fields when bucketing is enabled
+    if bucket_enabled:
+        min_res = parse_int(form, "bucket_min_res", issues, min_value=64)
+        max_res = parse_int(form, "bucket_max_res", issues, min_value=64)
+        step = parse_int(form, "bucket_step", issues, min_value=1)
 
-    min_res = parse_int(form, "bucket_min_res", issues, min_value=64)
-    max_res = parse_int(form, "bucket_max_res", issues, min_value=64)
-    step = parse_int(form, "bucket_step", issues, min_value=1)
+        if min_res is not None:
+            bucket["min_res"] = min_res
+        if max_res is not None:
+            bucket["max_res"] = max_res
+        if step is not None:
+            bucket["step"] = step
 
-    if min_res is not None:
-        bucket["min_res"] = min_res
-    if max_res is not None:
-        bucket["max_res"] = max_res
-    if step is not None:
-        bucket["step"] = step
+    # ---- Cross-field validation (FINAL config state) ----
+    resolution = dataset.get("resolution")
+    model_arch = config.get("model", {}).get("architecture", "sdxl")
+
+    if model_arch == "sd15" and resolution and resolution > 768:
+        issues.append({
+            "field": "resolution",
+            "level": "fatal",
+            "message": (
+                "Resolution is too high for SD 1.5.\n"
+                "SD 1.5 supports up to 768 resolution.\n\n"
+                "Fix: lower resolution or switch to SDXL."
+            )
+        })
