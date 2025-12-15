@@ -21,7 +21,6 @@ def apply(form, config, issues):
     if dropout is not None:
         lora["dropout"] = dropout
 
-    # Strings — no parsing needed
     if "lora_target_modules" in form:
         lora["target_modules"] = form["lora_target_modules"]
 

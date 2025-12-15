@@ -3,7 +3,6 @@ import yaml
 
 BASE_DIR = Path.home() / "lora_projects"
 
-
 def build_default_config(project_name: str):
     return {
         "project": {
@@ -12,7 +11,7 @@ def build_default_config(project_name: str):
         },
 
         "model": {
-            "architecture": "sdxl",   # sdxl | sd15
+            "architecture": "sdxl",
             "checkpoint": None
         },
 
@@ -103,7 +102,6 @@ def create_project(name: str):
     project_dir = BASE_DIR / name
     project_dir.mkdir(parents=True, exist_ok=False)
 
-    # standard subfolders
     (project_dir / "dataset").mkdir(exist_ok=True)
     (project_dir / "output").mkdir(exist_ok=True)
     (project_dir / "logs").mkdir(exist_ok=True)
@@ -114,8 +112,6 @@ def create_project(name: str):
 
     return project_dir
 
-
-# Optional CLI usage (safe)
 if __name__ == "__main__":
     name = input("Project name: ").strip()
     if name:

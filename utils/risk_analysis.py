@@ -12,7 +12,6 @@ def analyze_training_risk(training):
         if value is None:
             return []
 
-        # LR = 0 is explicitly allowed (freezing component)
         if value == 0:
             return []
 
@@ -37,7 +36,6 @@ def analyze_training_risk(training):
     issues += check_lr("clip", clip)
     issues += check_lr("t5", t5)
 
-    # Cross-check (useful, not annoying)
     if unet and clip and clip > unet:
         issues.append({
             "field": "lr_clip",
@@ -45,7 +43,6 @@ def analyze_training_risk(training):
             "message": "CLIP LR is higher than UNet LR. This is uncommon."
         })
 
-    # Batch size sanity
     core = training.get("core", {})
     batch = core.get("batch_size")
     if batch is not None and batch < 1:
@@ -55,7 +52,6 @@ def analyze_training_risk(training):
             "message": "Batch size must be >= 1."
         })
 
-    # Epochs sanity
     epochs = core.get("epochs")
     if epochs is not None and epochs <= 0:
         issues.append({
@@ -64,7 +60,6 @@ def analyze_training_risk(training):
             "message": "Epochs must be > 0."
         })
 
-    # Clip skip sanity (warn only)
     conditioning = training.get("conditioning", {})
     clip_skip = conditioning.get("clip_skip")
 

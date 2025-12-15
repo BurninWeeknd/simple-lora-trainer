@@ -1,6 +1,5 @@
 from utils.ensure_fields import parse_int
 
-
 def apply(form, config, issues):
     """
     Apply dataset-related settings from form to config.
@@ -9,7 +8,6 @@ def apply(form, config, issues):
 
     dataset = config["dataset"]
 
-    # Basic fields
     if "dataset_path" in form:
         dataset["path"] = form["dataset_path"].strip()
 
@@ -28,7 +26,6 @@ def apply(form, config, issues):
     dataset["shuffle"] = "shuffle" in form
     dataset["cache_latents"] = "cache_latents" in form
 
-    # ---- Captions ----
     captions = dataset["captions"]
 
     if "caption_extension" in form:
@@ -44,12 +41,10 @@ def apply(form, config, issues):
         val = form["append_token"].strip()
         captions["append_token"] = val if val else None
 
-    # ---- Bucketing ----
     bucket = dataset["bucket"]
     bucket_enabled = "bucket_enabled" in form
     bucket["enabled"] = bucket_enabled
 
-    # Only REQUIRE bucket fields when bucketing is enabled
     if bucket_enabled:
         min_res = parse_int(form, "bucket_min_res", issues, min_value=64)
         max_res = parse_int(form, "bucket_max_res", issues, min_value=64)
@@ -62,7 +57,6 @@ def apply(form, config, issues):
         if step is not None:
             bucket["step"] = step
 
-    # ---- Cross-field validation (FINAL config state) ----
     resolution = dataset.get("resolution")
     model_arch = config.get("model", {}).get("architecture", "sdxl")
 

@@ -38,7 +38,7 @@ def train_logs(project):
     if not log_path.exists():
         return {"logs": ""}
 
-    return {"logs": log_path.read_text()[-10000:]}  # last 10k chars
+    return {"logs": log_path.read_text()[-10000:]}
 
 @app.route("/stop/<project>", methods=["POST"])
 def stop_training(project):
@@ -47,7 +47,6 @@ def stop_training(project):
     print(f"[STOP] Stopping process group {pid} for {project}")
 
     try:
-        # Kill entire process group
         os.killpg(pid, signal.SIGTERM)
     except Exception as e:
         print(f"[STOP] SIGTERM failed, forcing kill: {e}")
@@ -117,7 +116,6 @@ def load_config(project_name):
 def start_training(project):
     pid_file = BASE_DIR / project / "training.pid"
 
-    # Prevent duplicate runs (and clean stale pid file)
     if pid_file.exists():
         try:
             pid = int(pid_file.read_text().strip())
@@ -173,9 +171,6 @@ def index():
         "output",
     }
 
-    # -------------------------------
-    # Load config (GET or POST)
-    # -------------------------------
     if selected:
         config = load_config(selected)
 
@@ -195,12 +190,7 @@ def index():
             })
             config = None
 
-    # -------------------------------
-    # POST: validate + save + train
-    # -------------------------------
     if request.method == "POST":
-
-        # 🔴 RESET STATE ONCE (this is the critical fix)
         issues = []
         danger_fields = []
 
@@ -224,10 +214,7 @@ def index():
                     )
                 })
             else:
-                # Architecture FIRST (everything else depends on it)
                 model.apply(request.form, config, issues)
-
-                # Dataset & training settings
                 dataset.apply(request.form, config, issues)
                 training.apply(request.form, config, issues)
                 lora.apply(request.form, config, issues)
@@ -235,20 +222,13 @@ def index():
                 precision.apply(request.form, config, issues)
                 optimizer.apply(request.form, config, issues)
 
-                # Risk analysis LAST (uses final config)
                 issues += analyze_training_risk(config["training"])
 
-        # -------------------------------
-        # Derive UI state
-        # -------------------------------
         danger_fields = [i["field"] for i in issues if i["level"] == "danger"]
         fatal_fields = [i["field"] for i in issues if i["level"] == "fatal"]
 
         action = request.form.get("action", "save")
 
-        # -------------------------------
-        # Save / Train decisions
-        # -------------------------------
         if not fatal_fields and not danger_fields:
             save_config(selected, config)
 
@@ -257,16 +237,10 @@ def index():
 
             return redirect(url_for("index", project=selected))
 
-    # -------------------------------
-    # Models list
-    # -------------------------------
     available_models = []
     if MODELS_DIR.exists():
         available_models = sorted(p.name for p in MODELS_DIR.glob("*.safetensors"))
 
-    # -------------------------------
-    # Training status
-    # -------------------------------
     training_status = "idle"
     pid_file = BASE_DIR / selected / "training.pid" if selected else None
     if pid_file and pid_file.exists():

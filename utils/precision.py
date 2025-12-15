@@ -6,18 +6,15 @@ def apply(form, config, issues):
     """
     precision = config.setdefault("precision", {})
 
-    # Mixed precision (string select)
     precision["mixed_precision"] = form.get("mixed_precision", "fp16")
 
-    # Booleans (checkboxes)
     precision["gradient_checkpointing"] = "gradient_checkpointing" in form
     precision["xformers"] = "xformers" in form
     precision["cpu_offload"] = "cpu_offload" in form
 
-    # xFormers availability check (FATAL)
     if precision.get("xformers"):
         try:
-            import xformers  # noqa: F401
+            import xformers
         except Exception:
             issues.append({
                 "field": "xformers",

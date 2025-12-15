@@ -38,15 +38,9 @@ def launch_training(project_name: str):
     if not config_path.exists():
         raise FileNotFoundError(f"Config not found: {config_path}")
 
-    # -------------------------------
-    # Logs
-    # -------------------------------
     log_dir = project_dir / "logs"
     log_dir.mkdir(exist_ok=True)
 
-    # -------------------------------
-    # Load config
-    # -------------------------------
     config = yaml.safe_load(config_path.read_text())
 
     dataset = config["dataset"]
@@ -60,10 +54,6 @@ def launch_training(project_name: str):
     save_every = training.get("save_every_epochs", 1)
     save_every = max(1, int(save_every))
 
-
-    # -------------------------------
-    # Model selection
-    # -------------------------------
     model_arch = model.get("architecture", "sdxl")
     raw_checkpoint = model.get("checkpoint")
 
@@ -95,9 +85,6 @@ def launch_training(project_name: str):
             else "runwayml/stable-diffusion-v1-5"
         )
 
-    # -------------------------------
-    # Select training script
-    # -------------------------------
     script = (
         SD_SCRIPTS / "sdxl_train_network.py"
         if model_arch == "sdxl"
@@ -107,16 +94,10 @@ def launch_training(project_name: str):
     if not script.exists():
         raise FileNotFoundError(f"Training script not found: {script}")
 
-    # -------------------------------
-    # Dataset path
-    # -------------------------------
     train_data_dir = project_dir / dataset["path"]
     if not train_data_dir.exists():
         raise FileNotFoundError(f"Dataset path not found: {train_data_dir}")
 
-    # -------------------------------
-    # Build command
-    # -------------------------------
     cmd = [
         "accelerate", "launch",
         str(script),
@@ -150,9 +131,6 @@ def launch_training(project_name: str):
     if precision.get("xformers"):
         cmd.append("--xformers")
 
-    # -------------------------------
-    # Launch
-    # -------------------------------
     print("[TRAIN] Launching training:")
     print(" ".join(shlex.quote(c) for c in cmd))
 

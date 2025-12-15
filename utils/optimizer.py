@@ -10,7 +10,6 @@ def apply(form, config, issues):
     optimizer = config["optimizer"]
     scheduler = config["scheduler"]
 
-    # ---- Optimizer ----
 
     if "optimizer_type" in form:
         optimizer["type"] = form["optimizer_type"]
@@ -28,8 +27,6 @@ def apply(form, config, issues):
     epsilon = parse_float(form, "epsilon", issues, min_value=0)
     if epsilon is not None:
         optimizer["epsilon"] = epsilon
-
-    # ---- Scheduler ----
 
     if "scheduler_type" in form:
         scheduler["type"] = form["scheduler_type"]
