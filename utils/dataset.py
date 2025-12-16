@@ -17,9 +17,6 @@ def apply(form, config, issues):
     if resolution is not None:
         dataset["resolution"] = resolution
 
-    repeats = parse_int(form, "repeats", issues, min_value=1)
-    if repeats is not None:
-        dataset["repeats"] = repeats
 
     batch = parse_int(form, "batch_size", issues, min_value=1)
     if batch is not None:
