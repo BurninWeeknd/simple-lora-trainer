@@ -98,6 +98,12 @@ def launch_training(project_name: str):
     if not train_data_dir.exists():
         raise FileNotFoundError(f"Dataset path not found: {train_data_dir}")
 
+    captions = dataset.get("captions", {})
+    caption_ext = captions.get("extension") or ".txt"
+
+    prepend = (captions.get("prepend_token") or "").strip()
+    append = (captions.get("append_token") or "").strip()
+
     cmd = [
         "accelerate", "launch",
         str(script),
@@ -107,9 +113,22 @@ def launch_training(project_name: str):
 
         "--resolution", str(dataset["resolution"]),
         "--train_batch_size", str(dataset["batch_size"]),
+        "--num_repeats", str(dataset["repeats"]),
         "--max_train_epochs", str(training["epochs"]),
         "--save_every_n_epochs", str(save_every),
 
+        "--caption_extension", caption_ext,
+    ]
+
+    if prepend:
+        cmd += ["--caption_prefix", prepend]
+    if append:
+        cmd += ["--caption_suffix", append]
+        
+    if captions.get("shuffle"):
+        cmd.append("--shuffle_caption")
+
+    cmd += [
         "--network_module", "networks.lora",
         "--network_dim", str(lora["rank"]),
         "--network_alpha", str(lora["alpha"]),
