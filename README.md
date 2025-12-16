@@ -43,10 +43,11 @@ Optional -
 -----------------------------
 Usage - 
 ###
-1) Create a project (folder defaults to home/yourusername/lora_project
+1) Create a project (folder defaults to home/yourusername/lora_project)
 - !! Do not place images directly in dataset - use a subfolder within the dataset folder - within the UI leave path as default 
 2) Configure settings
 3) Click Train
+- Take note: because I am using SD Scripts as training back end. Image repeats is set from folder name (example: 10_person = 10 repeats)
 ----------------------------
 The UI includes:
 ###
