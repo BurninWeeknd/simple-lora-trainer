@@ -141,8 +141,13 @@
 <input name="resolution" type="number" value="{{ dataset.get('resolution','') }}">
 <br><br>
 
-<label>Repeats</label><br>
-<input name="repeats" type="number" value="{{ dataset.get('repeats','') }}">
+<label>Repeats (from folder name)</label><br>
+<input
+    id="repeats"
+    type="number"
+    readonly
+    style="background:#2a2a2a; opacity:0.8;"
+>
 <br><br>
 
 <label>
@@ -682,6 +687,42 @@ document.addEventListener("DOMContentLoaded", updateT5Availability);
 // Run when architecture changes
 document.querySelector('select[name="model_architecture"]')
   ?.addEventListener("change", updateT5Availability);
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const projectSelect = document.querySelector('select[name="project"]');
+    const repeatsInput = document.getElementById("repeats");
+
+    if (!projectSelect || !repeatsInput) return;
+
+    function updateRepeats() {
+        const projectName = projectSelect.value.trim();
+
+        if (!projectName) {
+            repeatsInput.value = "";
+            return;
+        }
+
+        fetch("/dataset-repeat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ project_name: projectName })
+        })
+        .then(res => res.json())
+        .then(data => {
+            repeatsInput.value = data.repeat ?? "";
+        })
+        .catch(() => {
+            repeatsInput.value = "";
+        });
+    }
+
+    projectSelect.addEventListener("change", updateRepeats);
+
+    // Run once on page load
+    updateRepeats();
+});
 </script>
 
 {% endif %}
