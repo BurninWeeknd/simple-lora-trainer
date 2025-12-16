@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from pathlib import Path
 import yaml
 import shutil
@@ -15,6 +15,7 @@ import utils.dataset as dataset
 from utils.create_lora_project import create_project
 import utils.model as model
 from utils.launch_training import launch_training, TrainingConfigError
+from utils.dataset import get_dataset_root, get_repeat_from_dataset_root
 
 app = Flask(__name__)
 app.secret_key = "dev-key-change-me"
@@ -58,7 +59,21 @@ def stop_training(project):
     pid_file.unlink(missing_ok=True)
     return redirect(url_for("index", project=project))
 
+@app.route("/dataset-repeat", methods=["POST"])
+def dataset_repeat():
+    data = request.get_json(force=True) or {}
+    project_name = (data.get("project_name") or "").strip()
 
+    if not project_name:
+        return jsonify({"error": "Missing project_name"}), 400
+
+    dataset_root = get_dataset_root(project_name)
+    repeat = get_repeat_from_dataset_root(dataset_root)
+
+    return jsonify({
+        "dataset_root": str(dataset_root),
+        "repeat": repeat
+    })
 
 @app.route("/create_project", methods=["POST"])
 def create_project_route():
