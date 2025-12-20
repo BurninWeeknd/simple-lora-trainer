@@ -21,6 +21,13 @@
     <option value="gray">Gray</option>
     <option value="slate">Slate</option>
     <option value="midnight">Midnight</option>
+
+    <option disabled>──────────</option>
+
+    <option value="photo-1">Photo 1</option>
+    <option value="photo-2">Photo 2</option>
+    <option value="photo-3">Photo 3</option>
+    <option value="gradient">Gradient</option>
   </select>
 </div>
 
@@ -640,7 +647,7 @@ setInterval(fetchLogs, 2000);
 {% endif %}
 
 <script>
-  // Save scroll position when a submit action is triggered
+
   document.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (!btn) return;
@@ -650,7 +657,6 @@ setInterval(fetchLogs, 2000);
     }
   });
 
-  // Restore scroll position after page load
   window.addEventListener("load", () => {
     const y = localStorage.getItem("scrollY");
     if (y !== null) {
@@ -667,10 +673,34 @@ const themes = {
   midnight: "#0a0c10",
 };
 
+const photoMap = {
+  "photo-1": "/static/backgrounds/bg1.jpg",
+  "photo-2": "/static/backgrounds/bg2.jpg",
+  "photo-3": "/static/backgrounds/bg3.jpg",
+};
+
 const select = document.getElementById("theme-select");
 
 function applyTheme(name) {
-  document.documentElement.style.setProperty("--bg", themes[name]);
+  document.body.classList.remove("bg-photo", "bg-gradient");
+  document.documentElement.style.removeProperty("--bg-image");
+
+  if (themes[name]) {
+    document.documentElement.style.setProperty("--bg", themes[name]);
+  }
+
+  if (photoMap[name]) {
+    document.documentElement.style.setProperty(
+      "--bg-image",
+      `url("${photoMap[name]}")`
+    );
+    document.body.classList.add("bg-photo");
+  }
+
+  if (name === "gradient") {
+    document.body.classList.add("bg-gradient");
+  }
+
   localStorage.setItem("ui_theme", name);
 }
 
@@ -678,7 +708,9 @@ const saved = localStorage.getItem("ui_theme") || "dark";
 select.value = saved;
 applyTheme(saved);
 
-select.addEventListener("change", e => applyTheme(e.target.value));
+select.addEventListener("change", e => {
+  applyTheme(e.target.value);
+});
 </script>
 
 {% endif %}

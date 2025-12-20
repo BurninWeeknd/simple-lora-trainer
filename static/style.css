@@ -38,6 +38,7 @@
 }
 
 body {
+    position: relative;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     margin: 40px;
     background: var(--bg);
@@ -200,3 +201,34 @@ button:hover {
     color: var(--muted);
     margin-bottom: 14px;
 }
+
+body.bg-photo {
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+body.bg-photo::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 0;
+    pointer-events: none;
+}
+
+body.bg-gradient {
+    background: linear-gradient(
+        135deg,
+        #0f0f10,
+        #1a1a1d
+    );
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+}
+
