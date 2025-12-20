@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from config import BASE_DIR, MODELS_DIR
 import yaml
+from utils.paths import PROJECTS_DIR, project_dir, project_config_path, MODELS_DIR
 
 from utils.risk_analysis import analyze_training_risk
 import utils.dataset as dataset
@@ -14,19 +14,19 @@ import utils.model as model
 ui_bp = Blueprint("ui", __name__)
 
 def load_config(project):
-    path = BASE_DIR / project / "config.yaml"
+    path = project_config_path(project)
     if not path.exists():
         return None
     return yaml.safe_load(path.read_text())
 
 def save_config(project, config):
-    path = BASE_DIR / project / "config.yaml"
+    path = project_config_path(project)
     path.write_text(yaml.dump(config, sort_keys=False))
 
 
 @ui_bp.route("/", methods=["GET", "POST"])
 def index():
-    projects = [p.name for p in BASE_DIR.iterdir() if p.is_dir()]
+    projects = [p.name for p in PROJECTS_DIR.iterdir() if p.is_dir()]
     selected = request.values.get("project")
 
     issues = []
@@ -74,7 +74,7 @@ def index():
     available_models = sorted(p.name for p in MODELS_DIR.glob("*.safetensors"))
 
     training_status = "idle"
-    pid_file = BASE_DIR / selected / "training.pid" if selected else None
+    pid_file = project_dir(selected) / "training.pid" if selected else None
     if pid_file and pid_file.exists():
         training_status = "running"
 

@@ -1,4 +1,5 @@
 from pathlib import Path
+from utils.paths import project_output_dir
 
 
 def build_train_lora_cli_args(config: dict, project_dir: Path) -> list[str]:
@@ -9,7 +10,7 @@ def build_train_lora_cli_args(config: dict, project_dir: Path) -> list[str]:
     lora = config["lora"]
     precision = config["precision"]
 
-    dataset_path = project_dir / dataset["path"]
+    dataset_path = project_dir / Path(dataset["path"])
     captions = dataset.get("captions", {})
     caption_ext = captions.get("extension", ".txt")
 
@@ -41,7 +42,10 @@ def build_train_lora_cli_args(config: dict, project_dir: Path) -> list[str]:
             else "runwayml/stable-diffusion-v1-5"
         )
 
-    output_path = project_dir / "output" / f"{project['name']}.safetensors"
+    output_path = (
+        project_output_dir(project["name"])
+        / f"{project['name']}.safetensors"
+    )
 
     args = [
         "--model_type", model_type,

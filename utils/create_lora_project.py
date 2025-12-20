@@ -1,7 +1,12 @@
 from pathlib import Path
 import yaml
 
-BASE_DIR = Path.home() / "lora_projects"
+from utils.paths import (
+    project_dir,
+    project_dataset_dir,
+    project_output_dir,
+    ensure_dirs,
+)
 
 def build_default_config(project_name: str):
     return {
@@ -16,7 +21,7 @@ def build_default_config(project_name: str):
         },
 
         "dataset": {
-            "path": "dataset/",
+            "path": "dataset",
             "resolution": 1024,
             "repeats": 10,
             "batch_size": 1,
@@ -39,7 +44,7 @@ def build_default_config(project_name: str):
         "training": {
             "epochs": 10,
             "save_every_epochs": 1,
-            "do_inference": True, 
+            "do_inference": True,
             "gradient_accumulation": 1,
             "conditioning": {
                 "clip_skip": 1
@@ -95,19 +100,21 @@ def build_default_config(project_name: str):
         }
     }
 
-def create_project(name: str):
-    project_dir = BASE_DIR / name
-    project_dir.mkdir(parents=True, exist_ok=False)
+def create_project(name: str) -> Path:
+    ensure_dirs()
 
-    (project_dir / "dataset").mkdir(exist_ok=True)
-    (project_dir / "output").mkdir(exist_ok=True)
-    (project_dir / "logs").mkdir(exist_ok=True)
+    proj_dir = project_dir(name)
+    proj_dir.mkdir(parents=True, exist_ok=False)
+
+    project_dataset_dir(name).mkdir(exist_ok=True)
+    project_output_dir(name).mkdir(exist_ok=True)
+    (proj_dir / "logs").mkdir(exist_ok=True)
 
     config = build_default_config(name)
-    config_path = project_dir / "config.yaml"
+    config_path = proj_dir / "config.yaml"
     config_path.write_text(yaml.dump(config, sort_keys=False))
 
-    return project_dir
+    return proj_dir
 
 if __name__ == "__main__":
     name = input("Project name: ").strip()

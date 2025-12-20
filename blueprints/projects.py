@@ -1,6 +1,6 @@
 from flask import Blueprint, request, redirect, url_for
 from utils.create_lora_project import create_project
-from config import BASE_DIR
+from utils.paths import project_dir
 import shutil
 
 projects_bp = Blueprint("projects", __name__)
@@ -22,6 +22,6 @@ def delete_project_route():
     confirm = request.form.get("confirm_name")
 
     if name == confirm:
-        shutil.rmtree(BASE_DIR / name, ignore_errors=True)
+        shutil.rmtree(project_dir(name), ignore_errors=True)
 
     return redirect(url_for("ui.index"))

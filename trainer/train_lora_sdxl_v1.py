@@ -128,7 +128,7 @@ def log_train_config(cfg: TrainConfig) -> None:
     log(f"prepend_token={cfg.prepend_token}")
     log(f"append_token={cfg.append_token}")
     log(f"memorize_first_token={cfg.memorize_first_token}")
-    log(f"do_inference={cfg.do_inference} (ignored for now)")
+    log(f"do_inference={cfg.do_inference}")
     log("===== END CONFIG =====")
 
 def load_dataset(dataset_dir: str, caption_ext: str) -> List[Tuple[str, str]]:
@@ -322,6 +322,81 @@ def encode_prompt_sdxl(
         raise RuntimeError("encode_prompt did not return a tuple")
 
     return prompt_embeds.to(dtype), pooled.to(dtype)
+
+@torch.no_grad()
+def run_sdxl_inference_preview(
+    *,
+    pipe: StableDiffusionXLPipeline,
+    unet: nn.Module,
+    vae: nn.Module,
+    scheduler: DDPMScheduler,
+    output_dir: Path,
+    prompt: str,
+    steps: int,
+    seed: int,
+    device: torch.device,
+    dtype: torch.dtype,
+    resolution: int,
+):
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    unet.eval()
+    vae.eval()
+
+    scheduler.set_timesteps(steps, device=device)
+
+    prompt_embeds, pooled = encode_prompt_sdxl(
+        pipe,
+        [prompt],
+        device,
+        dtype,
+    )
+
+    add_time_ids = make_add_time_ids(
+        batch_size=1,
+        bucket_res=resolution,
+        device=device,
+        dtype=dtype,
+    )
+
+    latent_h = resolution // 8
+    latent_w = resolution // 8
+
+    gen = torch.Generator(device=device).manual_seed(seed)
+
+    latents = torch.randn(
+        (1, 4, latent_h, latent_w),
+        generator=gen,
+        device=device,
+        dtype=dtype,
+    )
+
+    for t in scheduler.timesteps:
+        latent_in = latents
+        if hasattr(scheduler, "scale_model_input"):
+            latent_in = scheduler.scale_model_input(latent_in, t)
+
+        noise_pred = unet(
+            latent_in,
+            t,
+            encoder_hidden_states=prompt_embeds,
+            added_cond_kwargs={
+                "text_embeds": pooled,
+                "time_ids": add_time_ids,
+            },
+        ).sample
+
+        latents = scheduler.step(noise_pred, t, latents).prev_sample
+
+    scaling_factor = float(getattr(vae.config, "scaling_factor", 0.18215))
+    latents = latents / scaling_factor
+
+    image = vae.decode(latents).sample
+    image = (image / 2 + 0.5).clamp(0, 1)
+    image = image[0].permute(1, 2, 0).cpu().numpy()
+
+    img = Image.fromarray((image * 255).astype("uint8"))
+    img.save(output_dir / "preview.png")
 
 def make_add_time_ids(batch_size: int, bucket_res: int, device: torch.device, dtype: torch.dtype):
     h = w = int(bucket_res)
@@ -675,6 +750,24 @@ def train(cfg: TrainConfig):
                 text_encoder_2=text_encoder_2 if train_clip else None,
                 path=str(out),
                 metadata=metadata,
+            )
+
+        if cfg.do_inference:
+            preview_dir = output_dir / f"{base_name}_epoch_{epoch}_preview"
+            log("STATUS inference preview (SDXL)")
+
+            run_sdxl_inference_preview(
+                pipe=pipe,
+                unet=unet,
+                vae=vae,
+                scheduler=scheduler,
+                output_dir=preview_dir,
+                prompt=cfg.inference_prompt,
+                steps=cfg.inference_steps,
+                seed=cfg.seed,
+                device=device,
+                dtype=dtype,
+                resolution=cfg.resolution,
             )
 
     final_out = output_dir / f"{base_name}_final.safetensors"

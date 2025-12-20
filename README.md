@@ -21,7 +21,7 @@ Installation:
 1) git clone https://github.com/bravooscarromeo/simple-lora-trainer.git
 2) cd path/to/Lora_Trainer
 3) pip install -r requirements.txt
-4) pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cuNNN (Specify version in for NNN)
+4) pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cuNNN (Specify version in for NNN) (Must be compatible with Toolkit version)
 5) python app.py
 6) hosted on port 5000 - ctrl + click the link in terminal
 ----------------------------
