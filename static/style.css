@@ -306,7 +306,7 @@ body.bg-gradient {
 
 pre {
   background: rgba(0, 0, 0);
-  color: var(--text);
+  color: #fff;
   border: 1px solid var(--border);
   border-radius: 8px;
 }
