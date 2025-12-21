@@ -30,9 +30,11 @@ Optional (Recommended) -
 -----------------------------
 Usage - 
 ###
-1) Create a project
-2) Configure settings
-3) Click Train
-4) Go make some coffee and maybe mow the lawn too while you wait 
+1) Create a project within the app
+2) Add photos to path/to/simple-lora-trainer/projects/<projectname>/dataset/ path defaults here in UI but if you prefer a subfolder within just add it to default path
+3) Generate captions within dataset prep (Top left corner) 
+4) Configure settings
+5) Click Train
+6) Go make some coffee and maybe mow the lawn too while you wait 
 ----------------------------
 
