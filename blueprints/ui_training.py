@@ -9,21 +9,11 @@ import utils.lora as lora
 import utils.precision as precision
 import utils.optimizer as optimizer
 import utils.model as model
+from utils.project_config import load_config, save_config
 
-ui_bp = Blueprint("ui", __name__)
+ui_training_bp = Blueprint("ui", __name__)
 
-def load_config(project):
-    path = project_config_path(project)
-    if not path.exists():
-        return None
-    return yaml.safe_load(path.read_text())
-
-def save_config(project, config):
-    path = project_config_path(project)
-    path.write_text(yaml.dump(config, sort_keys=False))
-
-
-@ui_bp.route("/", methods=["GET", "POST"])
+@ui_training_bp.route("/", methods=["GET", "POST"])
 def index():
     projects = [p.name for p in PROJECTS_DIR.iterdir() if p.is_dir()]
     selected = request.values.get("project")

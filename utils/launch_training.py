@@ -11,21 +11,14 @@ from utils.paths import (
     project_dataset_dir,
     project_output_dir,
     TRAINER_DIR,
-    MODELS_DIR,
 )
 
 from utils.trainer_cli_adapter import build_train_lora_cli_args
+from utils.hf_cache import setup_hf_env
 
-HF_CACHE_ROOT = MODELS_DIR / "hf_cache"
-HF_CACHE_ROOT.mkdir(exist_ok=True)
-
+setup_hf_env
 env = os.environ.copy()
-env["HF_HOME"] = str(HF_CACHE_ROOT)
-env["HUGGINGFACE_HUB_CACHE"] = str(HF_CACHE_ROOT / "hub")
-env["TRANSFORMERS_CACHE"] = str(HF_CACHE_ROOT / "transformers")
-env["DIFFUSERS_CACHE"] = str(HF_CACHE_ROOT / "diffusers")
-env["HF_DATASETS_CACHE"] = str(HF_CACHE_ROOT / "datasets")
-env["HF_HUB_DISABLE_TELEMETRY"] = "1"
+
 
 class TrainingConfigError(Exception):
     """Fatal configuration error that should never occur if Save validation is correct."""

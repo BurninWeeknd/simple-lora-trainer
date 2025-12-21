@@ -8,28 +8,12 @@
 <form method="get">
     <label>Project:</label>
     <select name="project" onchange="this.form.submit()">
-        <option value="">-- select --</option>
+        <option value="">-- Select --</option>
         {% for p in projects %}
             <option value="{{ p }}" {% if p == selected %}selected{% endif %}>{{ p }}</option>
         {% endfor %}
     </select>
 </form>
-
-<div id="theme-menu">
-  <select id="theme-select">
-    <option value="dark">Dark</option>
-    <option value="gray">Gray</option>
-    <option value="slate">Slate</option>
-    <option value="midnight">Midnight</option>
-
-    <option disabled>──────────</option>
-
-    <option value="photo-1">Photo 1</option>
-    <option value="photo-2">Photo 2</option>
-    <option value="photo-3">Photo 3</option>
-    <option value="gradient">Gradient</option>
-  </select>
-</div>
 
 <form method="post" action="{{ url_for('projects.create_project_route') }}" style="margin-top: 16px;">
   <label>

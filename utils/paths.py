@@ -28,10 +28,6 @@ def project_config_path(project_name: str) -> Path:
     return project_dir(project_name) / "config.yaml"
 
 def ensure_dirs():
-    """
-    Create all required base directories.
-    Safe to call multiple times.
-    """
     for d in [
         MODELS_DIR,
         BASE_MODELS_DIR,

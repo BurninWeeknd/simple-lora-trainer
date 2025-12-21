@@ -6,10 +6,31 @@
 </head>
 
 <body>
+
+  <div id="mode-switch">
+    <a href="/">Training</a>
+    <a href="/dataset">Dataset Prep</a>
+  </div>
+
   <div class="container">
       {% block content %}{% endblock %}
   </div>
 
   <script src="{{ url_for('static', filename='ui.js') }}"></script>
+  {% block page_js %}{% endblock %}
+
+  <div id="theme-menu">
+    <select id="theme-select">
+      <option value="dark">Dark</option>
+      <option value="gray">Gray</option>
+      <option value="slate">Slate</option>
+      <option value="midnight">Midnight</option>
+      <option value="gradient">Gradient</option>
+      <option value="photo-1">Photo 1</option>
+      <option value="photo-2">Photo 2</option>
+      <option value="photo-3">Photo 3</option>
+    </select>
+  </div>
+
 </body>
 </html>
