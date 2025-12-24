@@ -10,6 +10,11 @@ import utils.precision as precision
 import utils.optimizer as optimizer
 import utils.model as model
 from utils.project_config import load_config, save_config
+from flask import jsonify
+from pynvml import nvmlInit, nvmlDeviceGetHandleByIndex, nvmlDeviceGetMemoryInfo
+
+nvmlInit()
+_gpu_handle = nvmlDeviceGetHandleByIndex(0)
 
 ui_training_bp = Blueprint("ui", __name__)
 
@@ -76,3 +81,18 @@ def index():
         training_status=training_status,
         available_models=available_models,
     )
+
+@ui_training_bp.route("/vram")
+def vram_status():
+    try:
+        mem = nvmlDeviceGetMemoryInfo(_gpu_handle)
+        used = mem.used // (1024 * 1024)
+        total = mem.total // (1024 * 1024)
+
+        return jsonify({
+            "text": f"VRAM: {used}/{total}"
+        })
+    except Exception:
+        return jsonify({
+            "text": None
+        })

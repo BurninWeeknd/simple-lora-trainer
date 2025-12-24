@@ -61,9 +61,9 @@ def launch_training(project_name: str):
     args = build_train_lora_cli_args(config, proj_dir)
 
     if model_type == "sd":
-        trainer_script = TRAINER_DIR / "train_lora_v1.py"
+        trainer_script = TRAINER_DIR / "train_sd.py"
     elif model_type == "sdxl":
-        trainer_script = TRAINER_DIR / "train_lora_sdxl_v1.py"
+        trainer_script = TRAINER_DIR / "train_sdxl.py"
     else:
         raise TrainingConfigError(f"Unsupported model_type: {model_type}")
 

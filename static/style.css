@@ -234,8 +234,13 @@ button.danger:hover {
 
   font-size: 13px;
   line-height: 1.4;
+
+  width: max-content;
   max-width: 280px;
+
   white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   opacity: 0;
@@ -432,4 +437,22 @@ pre {
 .overwrite-toggle {
   font-size: 14px;
   color: var(--muted);
+}
+
+#log-container {
+  position: relative;
+  padding-top: 22px;
+}
+
+#vram-hud {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+
+  font-family: monospace;
+  font-size: 20px;
+  color: #d0d0d0;
+
+  pointer-events: none;
+  user-select: none;
 }

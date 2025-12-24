@@ -53,6 +53,25 @@ function applyTheme(name) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  const hud = document.getElementById("vram-hud");
+  if (hud) {
+    setInterval(async () => {
+      try {
+        const res = await fetch("/vram");
+        const data = await res.json();
+
+        if (data.text) {
+          hud.textContent = data.text;
+          hud.style.display = "block";
+        } else {
+          hud.style.display = "none";
+        }
+      } catch {
+      }
+    }, 10000);
+  }
+
   const select = document.getElementById("theme-select");
   if (!select) return;
 
@@ -64,3 +83,4 @@ document.addEventListener("DOMContentLoaded", () => {
     applyTheme(e.target.value);
   });
 });
+
