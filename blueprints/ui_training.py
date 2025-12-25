@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
-import yaml
+from flask import Blueprint, render_template, request, redirect, url_for, session, current_app
+from pathlib import Path
 from utils.paths import PROJECTS_DIR, project_dir, project_config_path, MODELS_DIR
-
+from utils.project_file import open_folder
 from utils.risk_analysis import analyze_training_risk
 import utils.dataset as dataset
 import utils.training as training
@@ -96,3 +96,21 @@ def vram_status():
         return jsonify({
             "text": None
         })
+    
+@ui_training_bp.route("/api/open_dataset_folder", methods=["POST"])
+def open_dataset_folder():
+    selected = request.args.get("project")
+
+    if not selected:
+        return jsonify({"success": False, "error": "No project selected"}), 400
+
+    project_path = PROJECTS_DIR / selected
+
+    if not project_path.is_dir():
+        return jsonify({"success": False, "error": "Project folder not found"}), 404
+
+    ok, err = open_folder(project_path)
+    if not ok:
+        return jsonify({"success": False}), 400
+
+    return jsonify({"success": True})

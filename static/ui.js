@@ -84,3 +84,19 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+document.getElementById("openDatasetBtn").addEventListener("click", async () => {
+  const params = new URLSearchParams(window.location.search);
+  const project = params.get("project");
+
+  try {
+    const res = await fetch(`/api/open_dataset_folder?project=${encodeURIComponent(project)}`, {
+      method: "POST"
+    });
+
+    if (!res.ok) {
+      console.warn("Could not open dataset folder");
+    }
+  } catch (err) {
+    console.error("Error opening dataset folder", err);
+  }
+});
